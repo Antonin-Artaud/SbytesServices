@@ -1,8 +1,9 @@
 package main
 
-import "hex-arch-go/cmd"
+import (
+	"SbytesServices/cmd"
+)
 
-// Call the entry point
 func main() {
 	cmd.Start()
 }
