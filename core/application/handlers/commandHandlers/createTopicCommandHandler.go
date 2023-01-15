@@ -16,7 +16,7 @@ func NewCreateTopicCommandHandler() *CreateTopicCommandHandler {
 	return &CreateTopicCommandHandler{}
 }
 
-func (h *CreateTopicCommandHandler) Handle(ctx context.Context, command *commands.CreateTopicCommand) (*commandResponses.CreateTopicCommandResponse, error) {
+func (h *CreateTopicCommandHandler) Handle(_ context.Context, _ *commands.CreateTopicCommand) (*commandResponses.CreateTopicCommandResponse, error) {
 	var (
 		topicId uuid.UUID
 		subject uuid.UUID
