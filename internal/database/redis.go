@@ -6,8 +6,9 @@ import (
 )
 
 type RedisDatabase struct {
-	ctx    context.Context
-	client *redis.Client
+	IDatabase // interface
+	ctx       context.Context
+	client    *redis.Client
 }
 
 func (rd *RedisDatabase) connect() {
