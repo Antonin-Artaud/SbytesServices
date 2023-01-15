@@ -17,14 +17,28 @@ func NewCreateTopicCommandHandler() *CreateTopicCommandHandler {
 }
 
 func (h *CreateTopicCommandHandler) Handle(ctx context.Context, command *commands.CreateTopicCommand) (*commandResponses.CreateTopicCommandResponse, error) {
-	topic := &entities.Topic{
-		Id:        uuid.New(),
-		Subject:   command.Subject,
-		CreatedAt: time.Now(),
-		ExpiredAt: time.Now().Add(time.Minute * 5),
+	var (
+		topicId uuid.UUID
+		subject uuid.UUID
+		err     error
+	)
+
+	if topicId, err = uuid.NewRandom(); err != nil {
+		return nil, err
 	}
 
-	return &commandResponses.CreateTopicCommandResponse{
-		Topic: topic,
-	}, nil
+	if subject, err = uuid.NewRandom(); err != nil {
+		return nil, err
+	}
+
+	response := &commandResponses.CreateTopicCommandResponse{
+		Topic: &entities.Topic{
+			Id:        topicId,
+			Subject:   subject,
+			CreatedAt: time.Now(),
+			ExpiredAt: time.Now().Add(time.Minute * 5),
+		},
+	}
+
+	return response, nil
 }

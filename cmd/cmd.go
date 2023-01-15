@@ -7,7 +7,7 @@ import (
 	"SbytesServices/core/domain/commands/commandResponses"
 	"SbytesServices/core/domain/queries"
 	"SbytesServices/core/domain/queries/queryResponses"
-	"SbytesServices/internal/helpers/database"
+	"SbytesServices/internal/database"
 	"SbytesServices/internal/helpers/logger"
 	"SbytesServices/server"
 	"context"
@@ -32,12 +32,14 @@ func Start() {
 		}
 	}(pDatabase)
 
-	registerHandlers()
+	registerMediatrHandler()
 
-	server.NewGinServer(ctx, pRedisDatabase, pLogger, 8080).Run()
+	ginServer := server.NewGinServer(ctx, pRedisDatabase, pLogger, 8080)
+	ginServer.Configure()
+	ginServer.Run()
 }
 
-func registerHandlers() {
+func registerMediatrHandler() {
 	createTopicCommandHandler := commandHandlers.NewCreateTopicCommandHandler()
 	getTopicByIdQueryHandler := queryHandlers.NewGetTopicByIdQueryHandler()
 

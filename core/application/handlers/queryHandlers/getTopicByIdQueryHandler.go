@@ -14,7 +14,5 @@ func NewGetTopicByIdQueryHandler() *GetTopicByIdQueryHandler {
 }
 
 func (h *GetTopicByIdQueryHandler) Handle(ctx context.Context, query *queries.GetTopicByIdQuery) (*queryResponses.GetTopicByIdQueryResponse, error) {
-	return &queryResponses.GetTopicByIdQueryResponse{
-		Topic: nil,
-	}, nil
+	return nil, nil
 }

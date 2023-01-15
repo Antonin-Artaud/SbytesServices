@@ -7,7 +7,7 @@ import (
 
 type Topic struct {
 	Id        uuid.UUID `json:"id"`
-	Subject   string    `json:"subject"`
+	Subject   uuid.UUID `json:"subject"`
 	CreatedAt time.Time `json:"createdAt"`
 	ExpiredAt time.Time `json:"expiredAt"`
 }
