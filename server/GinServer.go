@@ -11,7 +11,7 @@ import (
 type GinServer struct {
 	engine   *gin.Engine
 	ctx      context.Context
-	database database.Database
+	database database.IDatabase
 	logger   *logger.Logger
 	port     int16
 }
@@ -21,7 +21,7 @@ type GinServerInterface interface {
 	Run()
 }
 
-func NewGinServer(ctx context.Context, database database.Database, pLogger *logger.Logger, port int16) *GinServer {
+func NewGinServer(ctx context.Context, database database.IDatabase, pLogger *logger.Logger, port int16) *GinServer {
 	ginServer := &GinServer{
 		engine:   nil,
 		ctx:      ctx,

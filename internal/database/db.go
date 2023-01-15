@@ -2,6 +2,7 @@ package database
 
 import "github.com/go-redis/redis/v9"
 
-type Database interface {
+// IDatabase interface
+type IDatabase interface {
 	ConnectDatabase() *redis.Client
 }
