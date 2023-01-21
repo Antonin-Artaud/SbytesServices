@@ -4,16 +4,20 @@ import (
 	"SbytesServices/core/domain/commands"
 	"SbytesServices/core/domain/commands/commandResponses"
 	"SbytesServices/core/domain/entities"
+	"SbytesServices/internal/database"
 	"context"
 	"github.com/google/uuid"
 	"time"
 )
 
 type CreateTopicCommandHandler struct {
+	database database.IDatabase
 }
 
-func NewCreateTopicCommandHandler() *CreateTopicCommandHandler {
-	return &CreateTopicCommandHandler{}
+func NewCreateTopicCommandHandler(database database.IDatabase) *CreateTopicCommandHandler {
+	return &CreateTopicCommandHandler{
+		database: database,
+	}
 }
 
 func (h *CreateTopicCommandHandler) Handle(_ context.Context, _ *commands.CreateTopicCommand) (*commandResponses.CreateTopicCommandResponse, error) {
