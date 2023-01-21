@@ -40,6 +40,24 @@ func (rd *RedisDatabase) ConnectDatabase() (*redis.Client, error) {
 	return rd.client, nil
 }
 
+func (rd *RedisDatabase) WriteEntity(key string, value string) error {
+	if err := rd.client.Set(rd.ctx, key, value, 0).Err(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (rd *RedisDatabase) ReadEntity(key string) (string, error) {
+	val, err := rd.client.Get(rd.ctx, key).Result()
+
+	if err != nil {
+		return "", err
+	}
+
+	return val, nil
+}
+
 func NewRedisDatabase(ctx context.Context, logger *logger.Logger) *RedisDatabase {
 	return &RedisDatabase{
 		ctx:    ctx,
