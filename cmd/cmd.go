@@ -21,33 +21,46 @@ func Start() {
 
 	pLogger := logger.NewLogger(logger.INFO)
 
-	pRedisDatabase := database.NewRedisDatabase(ctx)
+	pDatabase := database.NewRedisDatabase(ctx, pLogger)
 
-	pDatabase := pRedisDatabase.ConnectDatabase()
+	pDatabaseConnection, err := pDatabase.ConnectDatabase()
 
-	defer func(pClient *redis.Client) {
+	if err != nil {
+		pLogger.LogError(err.Error())
+		return
+	}
+
+	defer closeDatabaseConnection(pDatabaseConnection, pLogger)
+
+	registerMediatrHandler(pDatabase)
+
+	createGinServer(ctx, pDatabase, pLogger)
+}
+
+func closeDatabaseConnection(pDatabase *redis.Client, pLogger *logger.Logger) {
+	func(pClient *redis.Client) {
 		err := pClient.Close()
 		if err != nil {
 			pLogger.LogError(err.Error())
 		}
 	}(pDatabase)
-
-	registerMediatrHandler()
-
-	ginServer := server.NewGinServer(ctx, pRedisDatabase, pLogger, 8080)
-	ginServer.Configure()
-	ginServer.Run()
 }
 
-func registerMediatrHandler() {
-	createTopicCommandHandler := commandHandlers.NewCreateTopicCommandHandler()
-	getTopicByIdQueryHandler := queryHandlers.NewGetTopicByIdQueryHandler()
+func registerMediatrHandler(databaseConnection database.IDatabase) {
+	pCreateTopicCommandHandler := commandHandlers.NewCreateTopicCommandHandler(databaseConnection)
+	pGetTopicByIdQueryHandler := queryHandlers.NewGetTopicByIdQueryHandler(databaseConnection)
 
-	if err := mediatr.RegisterRequestHandler[*commands.CreateTopicCommand, *commandResponses.CreateTopicCommandResponse](createTopicCommandHandler); err != nil {
+	if err := mediatr.RegisterRequestHandler[*commands.CreateTopicCommand, *commandResponses.CreateTopicCommandResponse](pCreateTopicCommandHandler); err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := mediatr.RegisterRequestHandler[*queries.GetTopicByIdQuery, *queryResponses.GetTopicByIdQueryResponse](getTopicByIdQueryHandler); err != nil {
+	if err := mediatr.RegisterRequestHandler[*queries.GetTopicByIdQuery, *queryResponses.GetTopicByIdQueryResponse](pGetTopicByIdQueryHandler); err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func createGinServer(ctx context.Context, pDatabase *database.RedisDatabase, pLogger *logger.Logger) {
+	pGinServer := server.NewGinServer(ctx, pDatabase, pLogger, 8080)
+	pGinServer.Configure()
+	pGinServer.Run()
 }

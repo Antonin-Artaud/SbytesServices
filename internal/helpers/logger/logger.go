@@ -30,7 +30,7 @@ func (l *Logger) LogError(message string) {
 		timeFormat := time.Now().Format("2006-01-02 15:04:05")
 		pc, _, _, _ := runtime.Caller(1)
 		funcName := runtime.FuncForPC(pc).Name()
-		l.Printf("[ERROR] - %s : %s -> %s\n", timeFormat, funcName, message)
+		l.Printf("[ERROR] - %s | [METHOD] %s -> [MESSAGE] %s\n", timeFormat, funcName, message)
 	}
 }
 
