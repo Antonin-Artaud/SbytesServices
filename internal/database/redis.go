@@ -2,46 +2,56 @@ package database
 
 import (
 	"SbytesServices/internal/helpers/logger"
-	"context"
-	"errors"
-	"github.com/go-redis/redis/v9"
+	"github.com/mediocregopher/radix/v3"
 )
 
 type RedisDatabase struct {
 	IDatabase // interface
-	ctx       context.Context
-	client    *redis.Client
+	RedisPool *radix.Pool
 	logger    *logger.Logger
 }
 
-func (rd *RedisDatabase) connect() error {
-	rd.client = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-
-	pingResponse, err := rd.client.Ping(rd.ctx).Result()
-
-	rd.logger.LogInfo(pingResponse)
+func (rd *RedisDatabase) InitPoolConnections() (*radix.Pool, error) {
+	pool, err := radix.NewPool("tcp", "localhost:6379", 10)
 
 	if err != nil {
+		rd.logger.LogError(err.Error())
+		return nil, err
+	}
+
+	rd.RedisPool = pool
+
+	return pool, nil
+}
+
+func (rd *RedisDatabase) Ping() error {
+	err := rd.RedisPool.Do(radix.Cmd(nil, "PING"))
+
+	if err != nil {
+		rd.logger.LogError(err.Error())
 		return err
 	}
 
 	return nil
 }
 
-func (rd *RedisDatabase) ConnectDatabase() (*redis.Client, error) {
-	if err := rd.connect(); err != nil {
-		return nil, err
+func (rd *RedisDatabase) WriteEntity(key string, value string) error {
+
+	err := rd.RedisPool.Do(radix.Cmd(nil, "MULTI"))
+	if err != nil {
+		rd.logger.LogError(err.Error())
+		return err
 	}
 
-	return rd.client, nil
-}
+	err = rd.RedisPool.Do(radix.Cmd(nil, "SET", key, value))
+	if err != nil {
+		rd.logger.LogError(err.Error())
+		return err
+	}
 
-func (rd *RedisDatabase) WriteEntity(key string, value string) error {
-	if err := rd.client.Set(rd.ctx, key, value, 0).Err(); err != nil {
+	err = rd.RedisPool.Do(radix.Cmd(nil, "EXEC"))
+	if err != nil {
+		rd.logger.LogError(err.Error())
 		return err
 	}
 
@@ -49,26 +59,19 @@ func (rd *RedisDatabase) WriteEntity(key string, value string) error {
 }
 
 func (rd *RedisDatabase) ReadEntity(key string) (string, error) {
-	val, err := rd.client.Get(rd.ctx, key).Result()
-
+	var value string
+	err := rd.RedisPool.Do(radix.Cmd(&value, "GET", key))
 	if err != nil {
+		rd.logger.LogError(err.Error())
 		return "", err
 	}
 
-	return val, nil
+	return value, nil
 }
 
-func NewRedisDatabase(ctx context.Context, logger *logger.Logger) *RedisDatabase {
+func NewRedisDatabase(logger *logger.Logger) *RedisDatabase {
 	return &RedisDatabase{
-		ctx:    ctx,
-		logger: logger,
+		RedisPool: nil,
+		logger:    logger,
 	}
-}
-
-func (rd *RedisDatabase) GetConnection() (*redis.Client, error) {
-	if rd.client == nil {
-		return nil, errors.New("redis client is nil")
-	}
-
-	return rd.client, nil
 }

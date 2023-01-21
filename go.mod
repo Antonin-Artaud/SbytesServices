@@ -6,6 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.8.2
 	github.com/go-redis/redis/v9 v9.0.0-rc.2
 	github.com/google/uuid v1.3.0
+	github.com/mediocregopher/radix/v3 v3.8.1
 	github.com/mehdihadeli/go-mediatr v1.1.9
 )
 
@@ -31,6 +32,7 @@ require (
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
+	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

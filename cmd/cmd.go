@@ -21,9 +21,9 @@ func Start() {
 
 	pLogger := logger.NewLogger(logger.INFO)
 
-	pDatabase := database.NewRedisDatabase(ctx, pLogger)
+	pDatabase := database.NewRedisDatabase(pLogger)
 
-	pDatabaseConnection, err := pDatabase.ConnectDatabase()
+	pDatabaseConnection, err := pDatabase.InitPoolConnections()
 
 	if err != nil {
 		pLogger.LogError(err.Error())
