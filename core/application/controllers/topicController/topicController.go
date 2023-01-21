@@ -1,6 +1,7 @@
-package controllers
+package topicController
 
 import (
+	"SbytesServices/core/application/controllers"
 	"SbytesServices/core/domain/commands"
 	"SbytesServices/core/domain/commands/commandResponses"
 	"SbytesServices/core/domain/queries"
@@ -12,12 +13,12 @@ import (
 )
 
 type TopicController struct {
-	IControllerBase // interface
+	controllers.IControllerBase // interface
 }
 
 func NewTopicController() *TopicController {
 	return &TopicController{
-		IControllerBase: &ControllerBase{},
+		IControllerBase: &controllers.ControllerBase{},
 	}
 }
 
