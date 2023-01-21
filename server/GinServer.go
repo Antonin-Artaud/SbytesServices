@@ -1,7 +1,7 @@
 package server
 
 import (
-	"SbytesServices/core/application/controllers"
+	"SbytesServices/core/application/controllers/topicController"
 	"SbytesServices/internal/database"
 	"SbytesServices/internal/helpers/logger"
 	"context"
@@ -42,7 +42,7 @@ func (gs *GinServer) Configure() {
 }
 
 func (gs *GinServer) addControllers() {
-	topicController := controllers.NewTopicController()
+	topicController := topicController.NewTopicController()
 
 	routerBaseGroup := gs.engine.Group("/api/v1")
 	{
