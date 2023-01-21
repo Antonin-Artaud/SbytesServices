@@ -1,8 +1,13 @@
 package database
 
-import "github.com/go-redis/redis/v9"
+import (
+	"github.com/mediocregopher/radix/v3"
+)
 
 // IDatabase interface
 type IDatabase interface {
-	ConnectDatabase() (*redis.Client, error)
+	InitPoolConnections() (*radix.Pool, error)
+	Ping() error
+	WriteEntity(key string, value string) error
+	ReadEntity(key string) (string, error)
 }
